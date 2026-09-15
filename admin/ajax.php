@@ -207,3 +207,51 @@ function neotiq_geo_row_payload( array $display, $selectable ) {
 		'html'    => neotiq_geo_row_html( $display, $selectable ),
 	);
 }
+
+/**
+ * Extract map coordinates for one batch of posts.
+ *
+ * Deliberately independent of the address check: it reads meta the post already
+ * has, so it never touches a geocoder and never waits on the one-per-second
+ * throttle.
+ */
+function neotiq_geo_ajax_coordinates() {
+	neotiq_geo_ajax_guard();
+
+	// phpcs:disable WordPress.Security.NonceVerification.Missing -- verified in neotiq_geo_ajax_guard().
+	$args     = neotiq_geo_sanitize_args( $_POST );
+	$after_id = isset( $_POST['after_id'] ) ? max( 0, (int) $_POST['after_id'] ) : 0;
+	$first    = empty( $_POST['after_id'] );
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+	// Counted before writing: in "missing only" mode every row written leaves
+	// the pending set, so counting afterwards gives an unreachable total.
+	$total = $first ? neotiq_geo_coordinates_total( $args ) : null;
+
+	$post_ids = neotiq_geo_coordinates_batch( $args, $after_id, $args['chunk'] );
+	$tally    = array(
+		'written'   => 0,
+		'unchanged' => 0,
+		'no_data'   => 0,
+	);
+
+	foreach ( $post_ids as $post_id ) {
+		$outcome = neotiq_geo_extract_coordinates( $post_id );
+		++$tally[ $outcome ];
+		$after_id = $post_id;
+	}
+
+	$payload = array(
+		'tally'    => $tally,
+		'afterId'  => $after_id,
+		'finished' => count( $post_ids ) < $args['chunk'],
+		'summary'  => neotiq_geo_coordinates_summary( $args['post_type'] ),
+	);
+
+	if ( null !== $total ) {
+		$payload['total'] = $total;
+	}
+
+	wp_send_json_success( $payload );
+}
+add_action( 'wp_ajax_neotiq_geo_coordinates', 'neotiq_geo_ajax_coordinates' );

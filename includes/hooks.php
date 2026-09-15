@@ -33,6 +33,10 @@ function neotiq_geo_maybe_sync( $post_id ) {
 
 	$done[ $post_id ] = true;
 
+	// Cheap and geocoder-free: mirror the coordinates before anything else, so
+	// map listings stay right even when the address cannot be resolved.
+	neotiq_geo_extract_coordinates( $post_id );
+
 	neotiq_geo_sync_post(
 		$post_id,
 		array(

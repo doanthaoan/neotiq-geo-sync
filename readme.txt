@@ -5,7 +5,7 @@ Plugin URI: https://neotiq.com/
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,11 +33,21 @@ Coordinates come from the field's marker when there is one, otherwise from the c
 
 Both are queried at most once per second, which their terms of use require. Results are cached in the `_neotiq_geo_cache` post meta and only refetched when the coordinates change, or when the cache is explicitly ignored.
 
+= Map coordinates =
+
+JetEngine's map listings and its geo-distance search read plain lat/lng meta, not the serialised OpenStreetMap field, so the coordinates are mirrored into `map_lat`, `map_lng` and `map_coordinate` on both post types.
+
+This needs no geocoding — it only reads meta the post already carries — so it runs at full speed and lives on its own tab, independent of the address check. You never have to re-check addresses just to refresh coordinates.
+
+Values that already match are left untouched, so a full rewrite is safe. A post with no usable address is reported and left exactly as it is, including any stale coordinates written before its address was cleared: deleting those is a decision for a human, not for a batch job.
+
+The field name must be the same on both post types, since JetEngine is configured with one meta key. The ACF field *keys* must differ, as ACF requires them to be globally unique. The plugin resolves the key from the field groups that apply to each post, because `update_field()` with a bare name resolves non-strictly and would otherwise attach one post type's field key to the other's posts.
+
 = When it runs =
 
-* **Admin** — on `acf/save_post`, at priority 25.
+* **Admin** — on `acf/save_post`, at priority 25: coordinates first, then the taxonomies.
 * **Front end** — on `jet-form-builder/modifier/after-run`. Not on `after-post-insert`: JetFormBuilder writes its terms and meta after that hook fires, and would overwrite anything set there.
-* **In bulk** — Tools > Neotiq Geo Sync.
+* **In bulk** — Tools > Neotiq Geo Sync, on either tab.
 
 = The bulk tool =
 
@@ -94,6 +104,12 @@ Address by address, bounded by the geocoders: both are queried at most once per 
 Because the useful question is "what is the state of this post now", not "what did run 14 say". One row per post, overwritten, answers that in a single query and doubles as the bookkeeping the incremental mode needs. Run history would grow without bound and still not tell you whether a post is currently correct.
 
 == Changelog ==
+
+= 1.1.0 =
+* Store findings in their own table, so reviewing no longer means re-checking.
+* Incremental checks: skip posts already checked and untouched since.
+* Filter, paginate and correct from the stored results; apply to a whole filtered set at once.
+* Absorb the standalone OSM coordinate extraction snippet, now covering providers as well as venues.
 
 = 1.0.0 =
 * Initial release.

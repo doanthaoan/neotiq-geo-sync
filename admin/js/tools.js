@@ -378,6 +378,128 @@
 		} ).catch( fail );
 	} );
 
+	/* ---- tabs ----------------------------------------------------------- */
+
+	document.querySelectorAll( '[data-neotiq-tab]' ).forEach( function ( tab ) {
+		tab.addEventListener( 'click', function ( event ) {
+			event.preventDefault();
+
+			document.querySelectorAll( '[data-neotiq-tab]' ).forEach( function ( other ) {
+				var active = other === tab;
+
+				other.classList.toggle( 'nav-tab-active', active );
+				el( 'neotiq-geo-tab-' + other.dataset.neotiqTab ).hidden = ! active;
+			} );
+		} );
+	} );
+
+	/* ---- map coordinates ------------------------------------------------ */
+
+	var coordPanel    = el( 'neotiq-geo-coord-panel' );
+	var coordRun      = el( 'neotiq-geo-coord-run' );
+	var coordStop     = el( 'neotiq-geo-coord-stop' );
+	var coordProgress = el( 'neotiq-geo-coord-progress' );
+	var coordCoverage = el( 'neotiq-geo-coord-coverage' );
+	var coordStopped  = false;
+
+	function renderCoverage( data ) {
+		if ( ! data ) {
+			return;
+		}
+
+		coordCoverage.textContent = format(
+			config.i18n.coverage,
+			[ data.withAddress, data.withCoordinates, data.missing ]
+		);
+	}
+
+	function extract() {
+		coordStopped = false;
+		coordProgress.textContent = config.i18n.extracting;
+		coordRun.disabled = true;
+		coordStop.hidden  = false;
+
+		coordPanel.querySelectorAll( 'select, input' ).forEach( function ( field ) {
+			field.disabled = true;
+		} );
+
+		var options = {
+			post_type: el( 'neotiq-geo-coord-post-type' ).value,
+			post_status: el( 'neotiq-geo-coord-post-status' ).value,
+			mode: el( 'neotiq-geo-coord-mode' ).value,
+			chunk: el( 'neotiq-geo-coord-chunk' ).value
+		};
+
+		var tally    = { written: 0, unchanged: 0, no_data: 0 };
+		var expected = 0;
+		var seen     = 0;
+
+		function batch( afterId ) {
+			var data = Object.assign( {}, options );
+
+			if ( afterId ) {
+				data.after_id = afterId;
+			}
+
+			return request( 'neotiq_geo_coordinates', data ).then( function ( payload ) {
+				if ( undefined !== payload.total ) {
+					expected = payload.total;
+				}
+
+				Object.keys( tally ).forEach( function ( key ) {
+					tally[ key ] += payload.tally[ key ];
+					seen         += payload.tally[ key ];
+				} );
+
+				renderCoverage( payload.summary );
+
+				if ( ! expected ) {
+					coordProgress.textContent = config.i18n.extractNone;
+
+					return;
+				}
+
+				coordProgress.textContent = format( config.i18n.progress, [ seen, expected ] );
+
+				if ( coordStopped ) {
+					coordProgress.textContent += ' — ' + config.i18n.cancelled;
+
+					return;
+				}
+
+				if ( ! payload.finished ) {
+					return batch( payload.afterId );
+				}
+
+				coordProgress.textContent = format(
+					config.i18n.extracted,
+					[ tally.written, tally.unchanged, tally.no_data ]
+				);
+			} );
+		}
+
+		batch( 0 ).catch( function ( error ) {
+			window.console.error( error );
+			coordProgress.textContent = config.i18n.failed;
+		} ).then( function () {
+			coordRun.disabled = false;
+			coordStop.hidden  = true;
+
+			coordPanel.querySelectorAll( 'select, input' ).forEach( function ( field ) {
+				field.disabled = false;
+			} );
+		} );
+	}
+
+	coordRun.addEventListener( 'click', extract );
+
+	coordStop.addEventListener( 'click', function () {
+		coordStopped = true;
+	} );
+
+	/* ---- boot ----------------------------------------------------------- */
+
 	renderSummary( config.summary );
+	renderCoverage( config.coordinates );
 	load( 1 );
 }() );

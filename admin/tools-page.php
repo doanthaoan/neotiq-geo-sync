@@ -85,7 +85,12 @@ add_action(
 					'lastRun'      => __( 'Last check: %s', 'neotiq-geo-sync' ),
 					'neverRun'     => __( 'No check stored yet.', 'neotiq-geo-sync' ),
 					'applyAll'     => __( 'Apply to all %d matching posts', 'neotiq-geo-sync' ),
+					'extracting'   => __( 'Extracting…', 'neotiq-geo-sync' ),
+					'extracted'    => __( 'Finished: %1$d written, %2$d already up to date, %3$d without usable coordinates.', 'neotiq-geo-sync' ),
+					'extractNone'  => __( 'Nothing to extract: every address already has its coordinates. Use "Rewrite all" to refresh them.', 'neotiq-geo-sync' ),
+					'coverage'     => __( '%1$d posts with an address · %2$d with coordinates · %3$d missing', 'neotiq-geo-sync' ),
 				),
+				'coordinates' => neotiq_geo_coordinates_summary( 'all' ),
 			)
 		);
 	}
@@ -154,10 +159,79 @@ function neotiq_geo_render_page() {
 		<h1><?php esc_html_e( 'Neotiq Geo Sync', 'neotiq-geo-sync' ); ?></h1>
 		<p><?php esc_html_e( 'Reads the OpenStreetMap address of every post and corrects its country, region, department, arrondissement and city terms. Findings are stored, so you can review them later without checking everything again.', 'neotiq-geo-sync' ); ?></p>
 
-		<?php
-		neotiq_geo_render_scan_panel();
-		neotiq_geo_render_results_panel();
-		?>
+		<h2 class="nav-tab-wrapper">
+			<a href="#" class="nav-tab nav-tab-active" data-neotiq-tab="taxonomies"><?php esc_html_e( 'Location taxonomies', 'neotiq-geo-sync' ); ?></a>
+			<a href="#" class="nav-tab" data-neotiq-tab="coordinates"><?php esc_html_e( 'Map coordinates', 'neotiq-geo-sync' ); ?></a>
+		</h2>
+
+		<div id="neotiq-geo-tab-taxonomies">
+			<?php
+			neotiq_geo_render_scan_panel();
+			neotiq_geo_render_results_panel();
+			?>
+		</div>
+
+		<div id="neotiq-geo-tab-coordinates" hidden>
+			<?php neotiq_geo_render_coordinates_panel(); ?>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * The map coordinate extraction controls.
+ */
+function neotiq_geo_render_coordinates_panel() {
+	?>
+	<div id="neotiq-geo-coord-panel" class="card" style="max-width:900px;padding:4px 16px;">
+		<h2><?php esc_html_e( 'Extract map coordinates', 'neotiq-geo-sync' ); ?></h2>
+		<p>
+			<?php esc_html_e( 'Mirrors the OpenStreetMap coordinates into the map_lat, map_lng and map_coordinate fields that JetEngine map listings and the distance search read. This reads meta the posts already carry, so it needs no geocoding and runs at full speed, independently of the address check.', 'neotiq-geo-sync' ); ?>
+		</p>
+		<p><strong id="neotiq-geo-coord-coverage"></strong></p>
+		<table class="form-table">
+			<tr>
+				<th scope="row"><label for="neotiq-geo-coord-post-type"><?php esc_html_e( 'Post type', 'neotiq-geo-sync' ); ?></label></th>
+				<td>
+					<select id="neotiq-geo-coord-post-type">
+						<option value="all"><?php esc_html_e( 'All', 'neotiq-geo-sync' ); ?></option>
+						<?php foreach ( NEOTIQ_GEO_POST_TYPES as $post_type ) : ?>
+							<option value="<?php echo esc_attr( $post_type ); ?>">
+								<?php echo esc_html( neotiq_geo_post_type_label( $post_type ) ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="neotiq-geo-coord-post-status"><?php esc_html_e( 'Status', 'neotiq-geo-sync' ); ?></label></th>
+				<td>
+					<select id="neotiq-geo-coord-post-status">
+						<option value="any"><?php esc_html_e( 'Any status', 'neotiq-geo-sync' ); ?></option>
+						<option value="publish"><?php esc_html_e( 'Published only', 'neotiq-geo-sync' ); ?></option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="neotiq-geo-coord-mode"><?php esc_html_e( 'Scope', 'neotiq-geo-sync' ); ?></label></th>
+				<td>
+					<select id="neotiq-geo-coord-mode">
+						<option value="incremental"><?php esc_html_e( 'Missing coordinates only', 'neotiq-geo-sync' ); ?></option>
+						<option value="full"><?php esc_html_e( 'Rewrite all', 'neotiq-geo-sync' ); ?></option>
+					</select>
+					<p class="description"><?php esc_html_e( 'Values that already match are left alone either way, so rewriting all is safe, just slower.', 'neotiq-geo-sync' ); ?></p>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="neotiq-geo-coord-chunk"><?php esc_html_e( 'Posts per batch', 'neotiq-geo-sync' ); ?></label></th>
+				<td><input type="number" id="neotiq-geo-coord-chunk" min="1" max="100" value="100"></td>
+			</tr>
+		</table>
+		<p>
+			<button type="button" class="button button-primary" id="neotiq-geo-coord-run"><?php esc_html_e( 'Start', 'neotiq-geo-sync' ); ?></button>
+			<button type="button" class="button" id="neotiq-geo-coord-stop" hidden><?php esc_html_e( 'Stop', 'neotiq-geo-sync' ); ?></button>
+			<span id="neotiq-geo-coord-progress" class="description"></span>
+		</p>
 	</div>
 	<?php
 }

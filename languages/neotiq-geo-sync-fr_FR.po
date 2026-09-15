@@ -1,8 +1,8 @@
 # French translation of the Neotiq Geo Sync plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Neotiq Geo Sync 1.0.0\n"
-"PO-Revision-Date: 2026-09-15 18:42:18+0000\n"
+"Project-Id-Version: Neotiq Geo Sync 1.1.0\n"
+"PO-Revision-Date: 2026-09-15 20:18:21+0000\n"
 "Last-Translator: Neotiq\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -28,11 +28,11 @@ msgstr "Déduit les taxonomies Pays / Région / Département / Arrondissement / 
 msgid "Neotiq"
 msgstr ""
 
-#: admin/ajax.php:19 admin/tools-page.php:150
+#: admin/ajax.php:19 admin/tools-page.php:155
 msgid "You are not allowed to access this page."
 msgstr "Vous n'avez pas l'autorisation d'accéder à cette page."
 
-#: admin/tools-page.php:29 admin/tools-page.php:30 admin/tools-page.php:154
+#: admin/tools-page.php:29 admin/tools-page.php:30 admin/tools-page.php:159
 msgid "Neotiq Geo Sync"
 msgstr "Neotiq Géo-sync"
 
@@ -112,144 +112,188 @@ msgstr "Aucune vérification enregistrée pour le moment."
 msgid "Apply to all %d matching posts"
 msgstr "Appliquer aux %d fiches correspondantes"
 
-#: admin/tools-page.php:155
+#: admin/tools-page.php:88
+msgid "Extracting…"
+msgstr "Extraction en cours…"
+
+#: admin/tools-page.php:89
+msgid "Finished: %1$d written, %2$d already up to date, %3$d without usable coordinates."
+msgstr "Terminé : %1$d écrite(s), %2$d déjà à jour, %3$d sans coordonnées exploitables."
+
+#: admin/tools-page.php:90
+msgid "Nothing to extract: every address already has its coordinates. Use \"Rewrite all\" to refresh them."
+msgstr "Rien à extraire : toutes les adresses ont déjà leurs coordonnées. Utilisez « Tout réécrire » pour les rafraîchir."
+
+#: admin/tools-page.php:91
+msgid "%1$d posts with an address · %2$d with coordinates · %3$d missing"
+msgstr "%1$d fiches avec adresse · %2$d avec coordonnées · %3$d manquantes"
+
+#: admin/tools-page.php:160
 msgid "Reads the OpenStreetMap address of every post and corrects its country, region, department, arrondissement and city terms. Findings are stored, so you can review them later without checking everything again."
 msgstr "Relit l'adresse OpenStreetMap de chaque fiche et corrige ses termes pays, région, département, arrondissement et ville. Les résultats sont enregistrés : vous pouvez les examiner plus tard sans tout revérifier."
 
-#: admin/tools-page.php:171
-msgid "Check addresses"
-msgstr "Vérifier les adresses"
+#: admin/tools-page.php:163
+msgid "Location taxonomies"
+msgstr "Taxonomies de localisation"
 
-#: admin/tools-page.php:174
+#: admin/tools-page.php:164
+msgid "Map coordinates"
+msgstr "Coordonnées cartographiques"
+
+#: admin/tools-page.php:187
+msgid "Extract map coordinates"
+msgstr "Extraire les coordonnées cartographiques"
+
+#: admin/tools-page.php:189
+msgid "Mirrors the OpenStreetMap coordinates into the map_lat, map_lng and map_coordinate fields that JetEngine map listings and the distance search read. This reads meta the posts already carry, so it needs no geocoding and runs at full speed, independently of the address check."
+msgstr "Recopie les coordonnées OpenStreetMap dans les champs map_lat, map_lng et map_coordinate que lisent les listings cartographiques JetEngine et la recherche par distance. Cette opération relit des métadonnées déjà présentes sur les fiches : elle ne fait aucun géocodage, s'exécute à pleine vitesse et reste indépendante de la vérification des adresses."
+
+#: admin/tools-page.php:194 admin/tools-page.php:248
 msgid "Post type"
 msgstr "Type de fiche"
 
-#: admin/tools-page.php:177 admin/tools-page.php:263
+#: admin/tools-page.php:197 admin/tools-page.php:251 admin/tools-page.php:337
 msgid "All"
 msgstr "Tous"
 
-#: admin/tools-page.php:187 admin/tools-page.php:308
+#: admin/tools-page.php:207 admin/tools-page.php:261 admin/tools-page.php:382
 msgid "Status"
 msgstr "Statut"
 
-#: admin/tools-page.php:190
+#: admin/tools-page.php:210 admin/tools-page.php:264
 msgid "Any status"
 msgstr "Tous les statuts"
 
-#: admin/tools-page.php:191
+#: admin/tools-page.php:211 admin/tools-page.php:265
 msgid "Published only"
 msgstr "Publiés seulement"
 
-#: admin/tools-page.php:196
+#: admin/tools-page.php:216 admin/tools-page.php:270
 msgid "Scope"
 msgstr "Portée"
 
-#: admin/tools-page.php:199
-msgid "New and modified posts only"
-msgstr "Fiches nouvelles ou modifiées uniquement"
+#: admin/tools-page.php:219
+msgid "Missing coordinates only"
+msgstr "Coordonnées manquantes uniquement"
 
-#: admin/tools-page.php:200
-msgid "Re-check everything"
-msgstr "Tout revérifier"
+#: admin/tools-page.php:220
+msgid "Rewrite all"
+msgstr "Tout réécrire"
 
-#: admin/tools-page.php:202
-msgid "The first option skips posts already checked and untouched since, so a second pass costs almost nothing. Stopping and starting again carries on where it left off."
-msgstr "La première option ignore les fiches déjà vérifiées et inchangées depuis : une seconde passe ne coûte presque rien. Après un arrêt, le redémarrage reprend là où la vérification s'était interrompue."
+#: admin/tools-page.php:222
+msgid "Values that already match are left alone either way, so rewriting all is safe, just slower."
+msgstr "Les valeurs déjà correctes ne sont pas touchées dans les deux cas : tout réécrire est sans risque, simplement plus lent."
 
-#: admin/tools-page.php:206
+#: admin/tools-page.php:226 admin/tools-page.php:280
 msgid "Posts per batch"
 msgstr "Fiches par lot"
 
-#: admin/tools-page.php:210
-msgid "Options"
-msgstr "Options"
-
-#: admin/tools-page.php:214
-msgid "Apply the corrections while checking"
-msgstr "Appliquer les corrections pendant la vérification"
-
-#: admin/tools-page.php:215
-msgid "— leave unchecked to review first and pick what to correct"
-msgstr "— décoché : vérifier d'abord, puis choisir ce qui doit être corrigé"
-
-#: admin/tools-page.php:219
-msgid "Create missing euville terms"
-msgstr "Créer les termes euville manquants"
-
-#: admin/tools-page.php:223
-msgid "Ignore the geocoding cache (forces a full pass and re-queries every address)"
-msgstr "Ignorer le cache de géocodage (force une passe complète et réinterroge chaque adresse)"
-
-#: admin/tools-page.php:229
+#: admin/tools-page.php:231 admin/tools-page.php:303
 msgid "Start"
 msgstr "Démarrer"
 
-#: admin/tools-page.php:230
+#: admin/tools-page.php:232 admin/tools-page.php:304
 msgid "Stop"
 msgstr "Arrêter"
 
-#: admin/tools-page.php:242
+#: admin/tools-page.php:245
+msgid "Check addresses"
+msgstr "Vérifier les adresses"
+
+#: admin/tools-page.php:273
+msgid "New and modified posts only"
+msgstr "Fiches nouvelles ou modifiées uniquement"
+
+#: admin/tools-page.php:274
+msgid "Re-check everything"
+msgstr "Tout revérifier"
+
+#: admin/tools-page.php:276
+msgid "The first option skips posts already checked and untouched since, so a second pass costs almost nothing. Stopping and starting again carries on where it left off."
+msgstr "La première option ignore les fiches déjà vérifiées et inchangées depuis : une seconde passe ne coûte presque rien. Après un arrêt, le redémarrage reprend là où la vérification s'était interrompue."
+
+#: admin/tools-page.php:284
+msgid "Options"
+msgstr "Options"
+
+#: admin/tools-page.php:288
+msgid "Apply the corrections while checking"
+msgstr "Appliquer les corrections pendant la vérification"
+
+#: admin/tools-page.php:289
+msgid "— leave unchecked to review first and pick what to correct"
+msgstr "— décoché : vérifier d'abord, puis choisir ce qui doit être corrigé"
+
+#: admin/tools-page.php:293
+msgid "Create missing euville terms"
+msgstr "Créer les termes euville manquants"
+
+#: admin/tools-page.php:297
+msgid "Ignore the geocoding cache (forces a full pass and re-queries every address)"
+msgstr "Ignorer le cache de géocodage (force une passe complète et réinterroge chaque adresse)"
+
+#: admin/tools-page.php:316
 msgid "Stored results"
 msgstr "Résultats enregistrés"
 
-#: admin/tools-page.php:250
+#: admin/tools-page.php:324
 msgid "Filter by status"
 msgstr "Filtrer par état"
 
-#: admin/tools-page.php:252
+#: admin/tools-page.php:326
 msgid "All statuses"
 msgstr "Tous les états"
 
-#: admin/tools-page.php:261
+#: admin/tools-page.php:335
 msgid "Filter by post type"
 msgstr "Filtrer par type de fiche"
 
-#: admin/tools-page.php:269
+#: admin/tools-page.php:343
 msgid "Rows per page"
 msgstr "Lignes par page"
 
-#: admin/tools-page.php:276
+#: admin/tools-page.php:350
 msgid "Refresh"
 msgstr "Actualiser"
 
-#: admin/tools-page.php:277
+#: admin/tools-page.php:351
 msgid "Delete stored results"
 msgstr "Supprimer les résultats enregistrés"
 
-#: admin/tools-page.php:288
+#: admin/tools-page.php:362
 msgid "Back up your database before applying."
 msgstr "Sauvegardez votre base de données avant d'appliquer."
 
-#: admin/tools-page.php:289
+#: admin/tools-page.php:363
 msgid "Corrections replace the existing terms on the selected posts and cannot be undone from this screen."
 msgstr "Les corrections remplacent les termes existants des fiches sélectionnées et sont irréversibles depuis cet écran."
 
-#: admin/tools-page.php:293
+#: admin/tools-page.php:367
 msgid "Apply the selected corrections"
 msgstr "Appliquer les corrections sélectionnées"
 
-#: admin/tools-page.php:304
+#: admin/tools-page.php:378
 msgid "Select every correctable post on this page"
 msgstr "Tout sélectionner sur cette page"
 
-#: admin/tools-page.php:306
+#: admin/tools-page.php:380
 msgid "ID"
 msgstr "ID"
 
-#: admin/tools-page.php:307
+#: admin/tools-page.php:381
 msgid "Post"
 msgstr "Fiche"
 
-#: admin/tools-page.php:309
+#: admin/tools-page.php:383
 msgid "Changes"
 msgstr "Modifications"
 
-#: admin/tools-page.php:310
+#: admin/tools-page.php:384
 msgid "Details"
 msgstr "Détails"
 
 #. translators: %s: date and time of the last check.
-#: admin/tools-page.php:348
+#: admin/tools-page.php:422
 msgid "checked %s"
 msgstr "vérifié le %s"
 
