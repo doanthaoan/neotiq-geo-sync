@@ -43,6 +43,35 @@ Values that already match are left untouched, so a full rewrite is safe. A post 
 
 The field name must be the same on both post types, since JetEngine is configured with one meta key. The ACF field *keys* must differ, as ACF requires them to be globally unique. The plugin resolves the key from the field groups that apply to each post, because `update_field()` with a bare name resolves non-strictly and would otherwise attach one post type's field key to the other's posts.
 
+= The location line on listing cards =
+
+Two virtual post meta keys, readable by a JetEngine Dynamic Field like any custom
+field:
+
+    _neotiq_location   Drôme, Valence     Rhône, Lyon, 2e     Paris, 13e     Marrakech
+    _neotiq_city       Valence            Lyon                Paris          Marrakech
+
+Set the widget's source to the key and turn on "Hide if value is empty". A post with
+no location returns an empty string, so the widget hides itself — there is no Dynamic
+Visibility rule to write and no Query Builder query to run.
+
+The same values are available as a shortcode for a text block or a template:
+
+    [neotiq_location]
+    [neotiq_location field="city"]
+    [neotiq_location field="department"]
+    [neotiq_location field="arrondissement"]
+
+Nothing is stored. The line is built from the terms already on the post, and WP_Query
+primes those into the object cache before the first card renders, so a grid of twenty
+costs no queries at all beyond the listing's own. There is nothing to backfill, and
+renaming a term changes every card at once.
+
+Paris, Lyon and Marseille carry an arrondissement in the localisation taxonomy
+instead of a ville term, and the line follows: department, then city, then
+arrondissement. Paris is its own department, so it is printed once, not twice.
+
+
 = When it runs =
 
 * **Admin** — on `acf/save_post`, at priority 25: coordinates first, then the taxonomies.

@@ -51,6 +51,7 @@ require_once NEOTIQ_GEO_PATH . 'includes/geocoding.php';
 require_once NEOTIQ_GEO_PATH . 'includes/coordinates.php';
 require_once NEOTIQ_GEO_PATH . 'includes/taxonomies.php';
 require_once NEOTIQ_GEO_PATH . 'includes/sync.php';
+require_once NEOTIQ_GEO_PATH . 'includes/display.php';
 require_once NEOTIQ_GEO_PATH . 'includes/hooks.php';
 
 if ( is_admin() ) {
