@@ -1,0 +1,332 @@
+# French translation of the Neotiq Geo Sync plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Neotiq Geo Sync 1.0.0\n"
+"PO-Revision-Date: 2026-09-15 18:42:18+0000\n"
+"Last-Translator: Neotiq\n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: neotiq-geo-sync\n"
+
+#. Plugin Name of the plugin
+msgid "Neotiq Geo Sync"
+msgstr "Neotiq Géo-sync"
+
+#. Plugin URI and Author URI of the plugin
+msgid "https://neotiq.com/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Derives the Country, Region, Department, Arrondissement and City taxonomies from the ACF OpenStreetMap address of venues and providers. Runs on save in both the admin and the JetFormBuilder front-end forms, and ships a bulk correction tool."
+msgstr "Déduit les taxonomies Pays / Région / Département / Arrondissement / Ville depuis l'adresse ACF OpenStreetMap des établissements et prestataires. S'exécute à l'enregistrement, dans l'administration comme dans les formulaires JetFormBuilder du site, et fournit un outil de correction en masse."
+
+#. Author of the plugin
+msgid "Neotiq"
+msgstr ""
+
+#: admin/ajax.php:19 admin/tools-page.php:150
+msgid "You are not allowed to access this page."
+msgstr "Vous n'avez pas l'autorisation d'accéder à cette page."
+
+#: admin/tools-page.php:29 admin/tools-page.php:30 admin/tools-page.php:154
+msgid "Neotiq Geo Sync"
+msgstr "Neotiq Géo-sync"
+
+#: admin/tools-page.php:69
+msgid "Checking…"
+msgstr "Vérification en cours…"
+
+#: admin/tools-page.php:70
+msgid "Checked %1$d of %2$d"
+msgstr "%1$d fiches vérifiées sur %2$d"
+
+#: admin/tools-page.php:71
+msgid "Check finished: %d post(s) processed."
+msgstr "Vérification terminée : %d fiche(s) traitée(s)."
+
+#: admin/tools-page.php:72
+msgid "Nothing to check: every post is up to date. Use \"Re-check everything\" to force a full pass."
+msgstr "Rien à vérifier : toutes les fiches sont à jour. Utilisez « Tout revérifier » pour forcer une passe complète."
+
+#: admin/tools-page.php:73
+msgid "Applying…"
+msgstr "Application en cours…"
+
+#: admin/tools-page.php:74
+msgid "Applied to %d post(s)."
+msgstr "Appliqué à %d fiche(s)."
+
+#: admin/tools-page.php:75
+msgid "%d selected"
+msgstr "%d sélectionnée(s)"
+
+#: admin/tools-page.php:76
+msgid "Select at least one post first."
+msgstr "Sélectionnez au moins une fiche."
+
+#: admin/tools-page.php:77
+msgid "Apply the corrections to %d post(s)?\n\nBack up your database first: this overwrites the existing terms and cannot be undone from this screen."
+msgstr "Appliquer les corrections à %d fiche(s) ?\n\nSauvegardez d'abord votre base de données : les termes existants seront écrasés et cette opération est irréversible depuis cet écran."
+
+#: admin/tools-page.php:78
+msgid "Delete every stored result? The posts themselves are not touched, but the next check will have to walk through all of them again."
+msgstr "Supprimer tous les résultats enregistrés ? Les fiches elles-mêmes ne sont pas touchées, mais la prochaine vérification devra toutes les reparcourir."
+
+#: admin/tools-page.php:79
+msgid "%d stored result(s) deleted."
+msgstr "%d résultat(s) enregistré(s) supprimé(s)."
+
+#: admin/tools-page.php:80
+msgid "The request failed. Check the browser console, then start the batch again."
+msgstr "La requête a échoué. Consultez la console du navigateur, puis relancez le lot."
+
+#: admin/tools-page.php:81
+msgid "Stopped. Start it again to carry on where it left off."
+msgstr "Arrêté. Redémarrez pour reprendre où la vérification s'est interrompue."
+
+#: admin/tools-page.php:82
+msgid "Loading…"
+msgstr "Chargement…"
+
+#: admin/tools-page.php:83
+msgid "No stored result matches this filter."
+msgstr "Aucun résultat enregistré ne correspond à ce filtre."
+
+#: admin/tools-page.php:84
+msgid "Showing %1$d–%2$d of %3$d"
+msgstr "%1$d–%2$d sur %3$d"
+
+#: admin/tools-page.php:85
+msgid "Last check: %s"
+msgstr "Dernière vérification : %s"
+
+#: admin/tools-page.php:86
+msgid "No check stored yet."
+msgstr "Aucune vérification enregistrée pour le moment."
+
+#: admin/tools-page.php:87
+msgid "Apply to all %d matching posts"
+msgstr "Appliquer aux %d fiches correspondantes"
+
+#: admin/tools-page.php:155
+msgid "Reads the OpenStreetMap address of every post and corrects its country, region, department, arrondissement and city terms. Findings are stored, so you can review them later without checking everything again."
+msgstr "Relit l'adresse OpenStreetMap de chaque fiche et corrige ses termes pays, région, département, arrondissement et ville. Les résultats sont enregistrés : vous pouvez les examiner plus tard sans tout revérifier."
+
+#: admin/tools-page.php:171
+msgid "Check addresses"
+msgstr "Vérifier les adresses"
+
+#: admin/tools-page.php:174
+msgid "Post type"
+msgstr "Type de fiche"
+
+#: admin/tools-page.php:177 admin/tools-page.php:263
+msgid "All"
+msgstr "Tous"
+
+#: admin/tools-page.php:187 admin/tools-page.php:308
+msgid "Status"
+msgstr "Statut"
+
+#: admin/tools-page.php:190
+msgid "Any status"
+msgstr "Tous les statuts"
+
+#: admin/tools-page.php:191
+msgid "Published only"
+msgstr "Publiés seulement"
+
+#: admin/tools-page.php:196
+msgid "Scope"
+msgstr "Portée"
+
+#: admin/tools-page.php:199
+msgid "New and modified posts only"
+msgstr "Fiches nouvelles ou modifiées uniquement"
+
+#: admin/tools-page.php:200
+msgid "Re-check everything"
+msgstr "Tout revérifier"
+
+#: admin/tools-page.php:202
+msgid "The first option skips posts already checked and untouched since, so a second pass costs almost nothing. Stopping and starting again carries on where it left off."
+msgstr "La première option ignore les fiches déjà vérifiées et inchangées depuis : une seconde passe ne coûte presque rien. Après un arrêt, le redémarrage reprend là où la vérification s'était interrompue."
+
+#: admin/tools-page.php:206
+msgid "Posts per batch"
+msgstr "Fiches par lot"
+
+#: admin/tools-page.php:210
+msgid "Options"
+msgstr "Options"
+
+#: admin/tools-page.php:214
+msgid "Apply the corrections while checking"
+msgstr "Appliquer les corrections pendant la vérification"
+
+#: admin/tools-page.php:215
+msgid "— leave unchecked to review first and pick what to correct"
+msgstr "— décoché : vérifier d'abord, puis choisir ce qui doit être corrigé"
+
+#: admin/tools-page.php:219
+msgid "Create missing euville terms"
+msgstr "Créer les termes euville manquants"
+
+#: admin/tools-page.php:223
+msgid "Ignore the geocoding cache (forces a full pass and re-queries every address)"
+msgstr "Ignorer le cache de géocodage (force une passe complète et réinterroge chaque adresse)"
+
+#: admin/tools-page.php:229
+msgid "Start"
+msgstr "Démarrer"
+
+#: admin/tools-page.php:230
+msgid "Stop"
+msgstr "Arrêter"
+
+#: admin/tools-page.php:242
+msgid "Stored results"
+msgstr "Résultats enregistrés"
+
+#: admin/tools-page.php:250
+msgid "Filter by status"
+msgstr "Filtrer par état"
+
+#: admin/tools-page.php:252
+msgid "All statuses"
+msgstr "Tous les états"
+
+#: admin/tools-page.php:261
+msgid "Filter by post type"
+msgstr "Filtrer par type de fiche"
+
+#: admin/tools-page.php:269
+msgid "Rows per page"
+msgstr "Lignes par page"
+
+#: admin/tools-page.php:276
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: admin/tools-page.php:277
+msgid "Delete stored results"
+msgstr "Supprimer les résultats enregistrés"
+
+#: admin/tools-page.php:288
+msgid "Back up your database before applying."
+msgstr "Sauvegardez votre base de données avant d'appliquer."
+
+#: admin/tools-page.php:289
+msgid "Corrections replace the existing terms on the selected posts and cannot be undone from this screen."
+msgstr "Les corrections remplacent les termes existants des fiches sélectionnées et sont irréversibles depuis cet écran."
+
+#: admin/tools-page.php:293
+msgid "Apply the selected corrections"
+msgstr "Appliquer les corrections sélectionnées"
+
+#: admin/tools-page.php:304
+msgid "Select every correctable post on this page"
+msgstr "Tout sélectionner sur cette page"
+
+#: admin/tools-page.php:306
+msgid "ID"
+msgstr "ID"
+
+#: admin/tools-page.php:307
+msgid "Post"
+msgstr "Fiche"
+
+#: admin/tools-page.php:309
+msgid "Changes"
+msgstr "Modifications"
+
+#: admin/tools-page.php:310
+msgid "Details"
+msgstr "Détails"
+
+#. translators: %s: date and time of the last check.
+#: admin/tools-page.php:348
+msgid "checked %s"
+msgstr "vérifié le %s"
+
+#: includes/sync.php:48
+msgid "No coordinates in the OpenStreetMap field."
+msgstr "Aucune coordonnée dans le champ OpenStreetMap."
+
+#: includes/sync.php:57
+msgid "Reverse geocoding unavailable (network error or no result)."
+msgstr "Géocodage inverse indisponible (erreur réseau ou aucun résultat)."
+
+#. translators: %s: ISO country code returned by the geocoder.
+#: includes/sync.php:76
+msgid "Country “%s” is missing from the eu taxonomy."
+msgstr "Pays « %s » absent de la taxonomie eu."
+
+#. translators: 1: country term(s) on the post, 2: ISO country code from the address.
+#: includes/sync.php:85
+msgid "Country mismatch: post says “%1$s”, address says “%2$s”. Nothing was changed, this needs a manual decision."
+msgstr "Pays incohérent : la fiche indique « %1$s », l'adresse « %2$s ». Aucune correction appliquée, à trancher manuellement."
+
+#. translators: 1: department code, 2: department name.
+#: includes/sync.php:140
+msgid "Department not found in the localisation taxonomy (code “%1$s”, name “%2$s”)."
+msgstr "Département introuvable dans la taxonomie localisation (code « %1$s », nom « %2$s »)."
+
+#: includes/sync.php:151
+msgid "Address outside the Base Adresse Nationale, fell back to Photon (no arrondissement detection)."
+msgstr "Adresse hors Base Adresse Nationale, repli sur Photon (pas de détection d'arrondissement)."
+
+#. translators: 1: arrondissement number, 2: city name.
+#: includes/sync.php:192
+msgid "Arrondissement %1$s not found under “%2$s”."
+msgstr "Arrondissement %1$s introuvable sous « %2$s »."
+
+#. translators: %s: city name.
+#: includes/sync.php:202
+msgid "City “%s” not found under the department."
+msgstr "Ville « %s » introuvable sous le département."
+
+#. translators: 1: postcode, 2: city name, 3: number of terms sharing that postcode.
+#: includes/sync.php:225
+msgid "City “%1$s %2$s” could not be resolved (%3$d term on this postcode), city left unchanged."
+msgid_plural "City “%1$s %2$s” could not be resolved (%3$d terms on this postcode), city left unchanged."
+msgstr[0] "Ville « %1$s %2$s » non résolue (%3$d terme sur ce code postal), ville inchangée."
+msgstr[1] "Ville « %1$s %2$s » non résolue (%3$d termes sur ce code postal), ville inchangée."
+
+#. translators: %s: newly created term name.
+#: includes/sync.php:282
+msgid "euville term “%s” was created."
+msgstr "Terme euville « %s » créé."
+
+#. translators: %s: city name returned by the geocoder.
+#: includes/sync.php:289
+msgid "City “%s” is missing from the euville taxonomy, left unchanged."
+msgstr "Ville « %s » absente de la taxonomie euville, inchangée."
+
+#: includes/sync.php:343
+msgid "No address"
+msgstr "Sans adresse"
+
+#: includes/sync.php:344
+msgid "Error"
+msgstr "Erreur"
+
+#: includes/sync.php:345
+msgid "Conflict"
+msgstr "Conflit"
+
+#: includes/sync.php:346
+msgid "Already correct"
+msgstr "Déjà correct"
+
+#: includes/sync.php:347
+msgid "To correct"
+msgstr "À corriger"
+
+#: includes/sync.php:348
+msgid "Corrected"
+msgstr "Corrigé"
