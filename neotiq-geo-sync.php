@@ -3,7 +3,7 @@
  * Plugin Name:       Neotiq Geo Sync
  * Plugin URI:        https://neotiq.com/
  * Description:       Derives the Country, Region, Department, Arrondissement and City taxonomies from the ACF OpenStreetMap address of venues and providers. Runs on save in both the admin and the JetFormBuilder front-end forms, and ships a bulk correction tool.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Neotiq
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'NEOTIQ_GEO_VERSION', '1.1.0' );
+define( 'NEOTIQ_GEO_VERSION', '1.2.0' );
 define( 'NEOTIQ_GEO_FILE', __FILE__ );
 define( 'NEOTIQ_GEO_PATH', plugin_dir_path( __FILE__ ) );
 

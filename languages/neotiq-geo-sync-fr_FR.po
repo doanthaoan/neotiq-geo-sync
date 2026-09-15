@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Neotiq Geo Sync 1.1.0\n"
-"PO-Revision-Date: 2026-09-15 20:18:21+0000\n"
+"PO-Revision-Date: 2026-09-15 22:56:38+0000\n"
 "Last-Translator: Neotiq\n"
 "Language-Team: Français\n"
 "Language: fr_FR\n"
@@ -28,7 +28,7 @@ msgstr "Déduit les taxonomies Pays / Région / Département / Arrondissement / 
 msgid "Neotiq"
 msgstr ""
 
-#: admin/ajax.php:19 admin/tools-page.php:155
+#: admin/ajax.php:19 admin/tools-page.php:155 tools/repair-truncated-names.php:29
 msgid "You are not allowed to access this page."
 msgstr "Vous n'avez pas l'autorisation d'accéder à cette page."
 
@@ -117,16 +117,16 @@ msgid "Extracting…"
 msgstr "Extraction en cours…"
 
 #: admin/tools-page.php:89
-msgid "Finished: %1$d written, %2$d already up to date, %3$d without usable coordinates."
-msgstr "Terminé : %1$d écrite(s), %2$d déjà à jour, %3$d sans coordonnées exploitables."
+msgid "Finished: %1$d updated, %2$d already up to date, %3$d with nothing to derive."
+msgstr "Terminé : %1$d mises à jour, %2$d déjà à jour, %3$d sans donnée à déduire."
 
 #: admin/tools-page.php:90
-msgid "Nothing to extract: every address already has its coordinates. Use \"Rewrite all\" to refresh them."
-msgstr "Rien à extraire : toutes les adresses ont déjà leurs coordonnées. Utilisez « Tout réécrire » pour les rafraîchir."
+msgid "Nothing to rebuild: every post is up to date. Use \"Rebuild all\" to refresh them anyway."
+msgstr "Rien à reconstruire : toutes les fiches sont à jour. Utilisez « Tout reconstruire » pour les rafraîchir malgré tout."
 
 #: admin/tools-page.php:91
-msgid "%1$d posts with an address · %2$d with coordinates · %3$d missing"
-msgstr "%1$d fiches avec adresse · %2$d avec coordonnées · %3$d manquantes"
+msgid "%1$d posts · %2$d with an address · %3$d with coordinates · %4$d with a location line · %5$d still to do"
+msgstr "%1$d fiches · %2$d avec une adresse · %3$d avec des coordonnées · %4$d avec une ligne de localisation · %5$d à traiter"
 
 #: admin/tools-page.php:160
 msgid "Reads the OpenStreetMap address of every post and corrects its country, region, department, arrondissement and city terms. Findings are stored, so you can review them later without checking everything again."
@@ -137,16 +137,16 @@ msgid "Location taxonomies"
 msgstr "Taxonomies de localisation"
 
 #: admin/tools-page.php:164
-msgid "Map coordinates"
-msgstr "Coordonnées cartographiques"
+msgid "Listing data"
+msgstr "Données de liste"
 
 #: admin/tools-page.php:187
-msgid "Extract map coordinates"
-msgstr "Extraire les coordonnées cartographiques"
+msgid "Rebuild listing data"
+msgstr "Reconstruire les données de liste"
 
 #: admin/tools-page.php:189
-msgid "Mirrors the OpenStreetMap coordinates into the map_lat, map_lng and map_coordinate fields that JetEngine map listings and the distance search read. This reads meta the posts already carry, so it needs no geocoding and runs at full speed, independently of the address check."
-msgstr "Recopie les coordonnées OpenStreetMap dans les champs map_lat, map_lng et map_coordinate que lisent les listings cartographiques JetEngine et la recherche par distance. Cette opération relit des métadonnées déjà présentes sur les fiches : elle ne fait aucun géocodage, s'exécute à pleine vitesse et reste indépendante de la vérification des adresses."
+msgid "Writes the two sets of fields a listing needs: map_lat, map_lng and map_coordinate for JetEngine map listings and the distance search, and _neotiq_location, _neotiq_city, _neotiq_department and _neotiq_dept_code for listing cards and search ordering. Both are derived from data the posts already carry, so this needs no geocoding and runs at full speed, independently of the address check. New and edited posts are kept up to date automatically; run this once after installing to fill in the posts that already exist."
+msgstr "Écrit les deux ensembles de champs dont une liste a besoin : map_lat, map_lng et map_coordinate pour les listes cartographiques JetEngine et la recherche par distance, et _neotiq_location, _neotiq_city, _neotiq_department et _neotiq_dept_code pour les cartes de liste et le tri de la recherche. Les deux sont déduits de données que les fiches portent déjà : aucun géocodage n'est nécessaire et le traitement s'exécute à pleine vitesse, indépendamment du contrôle des adresses. Les fiches créées ou modifiées sont tenues à jour automatiquement ; lancez ce traitement une fois après l'installation pour compléter les fiches existantes."
 
 #: admin/tools-page.php:194 admin/tools-page.php:248
 msgid "Post type"
@@ -173,12 +173,12 @@ msgid "Scope"
 msgstr "Portée"
 
 #: admin/tools-page.php:219
-msgid "Missing coordinates only"
-msgstr "Coordonnées manquantes uniquement"
+msgid "Only what is missing"
+msgstr "Uniquement ce qui manque"
 
 #: admin/tools-page.php:220
-msgid "Rewrite all"
-msgstr "Tout réécrire"
+msgid "Rebuild all"
+msgstr "Tout reconstruire"
 
 #: admin/tools-page.php:222
 msgid "Values that already match are left alone either way, so rewriting all is safe, just slower."

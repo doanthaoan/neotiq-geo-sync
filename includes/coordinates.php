@@ -123,7 +123,28 @@ function neotiq_geo_extract_coordinates( $post_id ) {
 }
 
 /**
- * SQL fragment selecting posts an extraction pass should visit.
+ * Everything derived from one post: its map coordinates and its listing fields.
+ *
+ * Both read data the post already carries, so neither touches a geocoder and neither
+ * waits on the one-call-per-second throttle.
+ *
+ * @param int $post_id Post ID.
+ *
+ * @return string written, unchanged or no_data.
+ */
+function neotiq_geo_refresh_post( $post_id ) {
+	$coordinates = neotiq_geo_extract_coordinates( $post_id );
+	$listing     = neotiq_geo_store_listing_meta( $post_id );
+
+	if ( 'written' === $coordinates || 'written' === $listing ) {
+		return 'written';
+	}
+
+	return 'no_data' === $coordinates && 'no_data' === $listing ? 'no_data' : 'unchanged';
+}
+
+/**
+ * SQL fragment selecting posts a rebuild pass should visit.
  *
  * @param array $args post_type, post_status, mode.
  *
@@ -139,19 +160,29 @@ function neotiq_geo_coordinates_where( array $args ) {
 	$where  = 'p.post_type IN (' . implode( ',', array_fill( 0, count( $types ), '%s' ) ) . ')';
 	$where .= ' AND p.post_status IN (' . implode( ',', array_fill( 0, count( $statuses ), '%s' ) ) . ')';
 
-	// Only posts that actually carry an address.
-	$where .= ' AND EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' osm
+	$values = array_merge( array_values( $types ), array_values( $statuses ) );
+
+	if ( 'full' === $args['mode'] ) {
+		return array( $where, $values );
+	}
+
+	// Still to do: either the listing fields have never been built, or the post has an
+	// address but no coordinates. A post with no address leaves the set as soon as its
+	// listing fields are written, so the pending count always reaches zero instead of
+	// holding on to posts that can never gain coordinates.
+	$where   .= ' AND ( NOT EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' listing
+		WHERE listing.post_id = p.ID AND listing.meta_key = %s )';
+	$values[] = '_neotiq_location';
+
+	$where .= ' OR ( EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' osm
 		WHERE osm.post_id = p.ID
 		  AND osm.meta_key IN (' . implode( ',', array_fill( 0, count( $osm_keys ), '%s' ) ) . ')
 		  AND osm.meta_value <> \'\' )';
+	$values = array_merge( $values, array_values( $osm_keys ) );
 
-	$values = array_merge( array_values( $types ), array_values( $statuses ), array_values( $osm_keys ) );
-
-	if ( 'full' !== $args['mode'] ) {
-		$where   .= ' AND NOT EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' lat
-			WHERE lat.post_id = p.ID AND lat.meta_key = %s AND lat.meta_value <> \'\' )';
-		$values[] = 'map_lat';
-	}
+	$where   .= ' AND NOT EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' lat
+		WHERE lat.post_id = p.ID AND lat.meta_key = %s AND lat.meta_value <> \'\' ) ) )';
+	$values[] = 'map_lat';
 
 	return array( $where, $values );
 }
@@ -208,12 +239,49 @@ function neotiq_geo_coordinates_summary( $post_type = 'all' ) {
 		'post_status' => 'any',
 	);
 
-	$with_address = neotiq_geo_coordinates_total( array_merge( $base, array( 'mode' => 'full' ) ) );
-	$missing      = neotiq_geo_coordinates_total( array_merge( $base, array( 'mode' => 'incremental' ) ) );
+	global $wpdb;
+
+	$total   = neotiq_geo_coordinates_total( array_merge( $base, array( 'mode' => 'full' ) ) );
+	$missing = neotiq_geo_coordinates_total( array_merge( $base, array( 'mode' => 'incremental' ) ) );
+
+	$types    = 'all' === $post_type ? NEOTIQ_GEO_POST_TYPES : array( $post_type );
+	$osm_keys = NEOTIQ_GEO_OSM_KEYS;
+
+	$counted = function ( $sql, $values ) use ( $wpdb, $types ) {
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM ' . $wpdb->posts . ' p WHERE p.post_type IN ('
+				. implode( ',', array_fill( 0, count( $types ), '%s' ) ) . ') AND ' . $sql,
+				array_merge( array_values( $types ), $values )
+			)
+		);
+	};
+
+	$with_address = $counted(
+		'EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' osm WHERE osm.post_id = p.ID
+			AND osm.meta_key IN (' . implode( ',', array_fill( 0, count( $osm_keys ), '%s' ) ) . ')
+			AND osm.meta_value <> \'\' )',
+		array_values( $osm_keys )
+	);
+
+	$with_coordinates = $counted(
+		'EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' lat
+			WHERE lat.post_id = p.ID AND lat.meta_key = %s AND lat.meta_value <> \'\' )',
+		array( 'map_lat' )
+	);
+
+	$with_location = $counted(
+		'EXISTS ( SELECT 1 FROM ' . $wpdb->postmeta . ' listing
+			WHERE listing.post_id = p.ID AND listing.meta_key = %s AND listing.meta_value <> \'\' )',
+		array( '_neotiq_location' )
+	);
 
 	return array(
+		'total'           => $total,
 		'withAddress'     => $with_address,
-		'withCoordinates' => $with_address - $missing,
+		'withCoordinates' => $with_coordinates,
+		'withLocation'    => $with_location,
 		'missing'         => $missing,
 	);
 }

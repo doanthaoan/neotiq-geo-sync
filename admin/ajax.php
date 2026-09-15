@@ -209,10 +209,10 @@ function neotiq_geo_row_payload( array $display, $selectable ) {
 }
 
 /**
- * Extract map coordinates for one batch of posts.
+ * Rebuild the derived fields — map coordinates and listing fields — for one batch.
  *
- * Deliberately independent of the address check: it reads meta the post already
- * has, so it never touches a geocoder and never waits on the one-per-second
+ * Deliberately independent of the address check: it reads data the post already
+ * carries, so it never touches a geocoder and never waits on the one-per-second
  * throttle.
  */
 function neotiq_geo_ajax_coordinates() {
@@ -236,7 +236,7 @@ function neotiq_geo_ajax_coordinates() {
 	);
 
 	foreach ( $post_ids as $post_id ) {
-		$outcome = neotiq_geo_extract_coordinates( $post_id );
+		$outcome = neotiq_geo_refresh_post( $post_id );
 		++$tally[ $outcome ];
 		$after_id = $post_id;
 	}

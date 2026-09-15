@@ -44,6 +44,12 @@ function neotiq_geo_maybe_sync( $post_id ) {
 			'create_euville' => true,
 		)
 	);
+
+	// Queue the listing fields even when the sync changed no terms: a post saved
+	// without an address still needs its fields written, or a rebuild pass would
+	// keep finding it. set_object_terms queues the same post when terms do change,
+	// and the queue only ever builds each post once, at shutdown.
+	neotiq_geo_listing_queue( $post_id );
 }
 
 // Admin: after ACF has saved its fields. The existing snippet that extracts

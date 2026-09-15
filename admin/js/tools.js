@@ -409,7 +409,7 @@
 
 		coordCoverage.textContent = format(
 			config.i18n.coverage,
-			[ data.withAddress, data.withCoordinates, data.missing ]
+			[ data.total, data.withAddress, data.withCoordinates, data.withLocation, data.missing ]
 		);
 	}
 

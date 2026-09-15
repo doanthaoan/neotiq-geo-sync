@@ -86,9 +86,9 @@ add_action(
 					'neverRun'     => __( 'No check stored yet.', 'neotiq-geo-sync' ),
 					'applyAll'     => __( 'Apply to all %d matching posts', 'neotiq-geo-sync' ),
 					'extracting'   => __( 'Extracting…', 'neotiq-geo-sync' ),
-					'extracted'    => __( 'Finished: %1$d written, %2$d already up to date, %3$d without usable coordinates.', 'neotiq-geo-sync' ),
-					'extractNone'  => __( 'Nothing to extract: every address already has its coordinates. Use "Rewrite all" to refresh them.', 'neotiq-geo-sync' ),
-					'coverage'     => __( '%1$d posts with an address · %2$d with coordinates · %3$d missing', 'neotiq-geo-sync' ),
+					'extracted'    => __( 'Finished: %1$d updated, %2$d already up to date, %3$d with nothing to derive.', 'neotiq-geo-sync' ),
+					'extractNone'  => __( 'Nothing to rebuild: every post is up to date. Use "Rebuild all" to refresh them anyway.', 'neotiq-geo-sync' ),
+					'coverage'     => __( '%1$d posts · %2$d with an address · %3$d with coordinates · %4$d with a location line · %5$d still to do', 'neotiq-geo-sync' ),
 				),
 				'coordinates' => neotiq_geo_coordinates_summary( 'all' ),
 			)
@@ -161,7 +161,7 @@ function neotiq_geo_render_page() {
 
 		<h2 class="nav-tab-wrapper">
 			<a href="#" class="nav-tab nav-tab-active" data-neotiq-tab="taxonomies"><?php esc_html_e( 'Location taxonomies', 'neotiq-geo-sync' ); ?></a>
-			<a href="#" class="nav-tab" data-neotiq-tab="coordinates"><?php esc_html_e( 'Map coordinates', 'neotiq-geo-sync' ); ?></a>
+			<a href="#" class="nav-tab" data-neotiq-tab="coordinates"><?php esc_html_e( 'Listing data', 'neotiq-geo-sync' ); ?></a>
 		</h2>
 
 		<div id="neotiq-geo-tab-taxonomies">
@@ -184,9 +184,9 @@ function neotiq_geo_render_page() {
 function neotiq_geo_render_coordinates_panel() {
 	?>
 	<div id="neotiq-geo-coord-panel" class="card" style="max-width:900px;padding:4px 16px;">
-		<h2><?php esc_html_e( 'Extract map coordinates', 'neotiq-geo-sync' ); ?></h2>
+		<h2><?php esc_html_e( 'Rebuild listing data', 'neotiq-geo-sync' ); ?></h2>
 		<p>
-			<?php esc_html_e( 'Mirrors the OpenStreetMap coordinates into the map_lat, map_lng and map_coordinate fields that JetEngine map listings and the distance search read. This reads meta the posts already carry, so it needs no geocoding and runs at full speed, independently of the address check.', 'neotiq-geo-sync' ); ?>
+			<?php esc_html_e( 'Writes the two sets of fields a listing needs: map_lat, map_lng and map_coordinate for JetEngine map listings and the distance search, and _neotiq_location, _neotiq_city, _neotiq_department and _neotiq_dept_code for listing cards and search ordering. Both are derived from data the posts already carry, so this needs no geocoding and runs at full speed, independently of the address check. New and edited posts are kept up to date automatically; run this once after installing to fill in the posts that already exist.', 'neotiq-geo-sync' ); ?>
 		</p>
 		<p><strong id="neotiq-geo-coord-coverage"></strong></p>
 		<table class="form-table">
@@ -216,8 +216,8 @@ function neotiq_geo_render_coordinates_panel() {
 				<th scope="row"><label for="neotiq-geo-coord-mode"><?php esc_html_e( 'Scope', 'neotiq-geo-sync' ); ?></label></th>
 				<td>
 					<select id="neotiq-geo-coord-mode">
-						<option value="incremental"><?php esc_html_e( 'Missing coordinates only', 'neotiq-geo-sync' ); ?></option>
-						<option value="full"><?php esc_html_e( 'Rewrite all', 'neotiq-geo-sync' ); ?></option>
+						<option value="incremental"><?php esc_html_e( 'Only what is missing', 'neotiq-geo-sync' ); ?></option>
+						<option value="full"><?php esc_html_e( 'Rebuild all', 'neotiq-geo-sync' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'Values that already match are left alone either way, so rewriting all is safe, just slower.', 'neotiq-geo-sync' ); ?></p>
 				</td>

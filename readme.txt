@@ -5,7 +5,7 @@ Plugin URI: https://neotiq.com/
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,31 +45,46 @@ The field name must be the same on both post types, since JetEngine is configure
 
 = The location line on listing cards =
 
-Two virtual post meta keys, readable by a JetEngine Dynamic Field like any custom
-field:
+Four post meta fields, written for every venue and provider and kept up to date
+automatically:
 
-    _neotiq_location   Drôme, Valence     Rhône, Lyon, 2e     Paris, 13e     Marrakech
-    _neotiq_city       Valence            Lyon                Paris          Marrakech
+    _neotiq_location    Drôme, Valence   Rhône, Lyon, 2e   Paris, 13e   Marrakech
+    _neotiq_city        Valence          Lyon              Paris        Marrakech
+    _neotiq_department  Drôme            Rhône             (empty)      (empty)
+    _neotiq_dept_code   26               69                75           (empty)
 
-Set the widget's source to the key and turn on "Hide if value is empty". A post with
-no location returns an empty string, so the widget hides itself — there is no Dynamic
-Visibility rule to write and no Query Builder query to run.
-
-The same values are available as a shortcode for a text block or a template:
+For a listing card, point a JetEngine Dynamic Field at `_neotiq_location` and turn on
+"Hide if value is empty". A post with no location stores an empty string, so the
+widget hides itself — there is no Dynamic Visibility rule to write and no Query
+Builder query to run. The same values are available as a shortcode for a text block
+or a template:
 
     [neotiq_location]
     [neotiq_location field="city"]
     [neotiq_location field="department"]
     [neotiq_location field="arrondissement"]
 
-Nothing is stored. The line is built from the terms already on the post, and WP_Query
-primes those into the object cache before the first card renders, so a grid of twenty
-costs no queries at all beyond the listing's own. There is nothing to backfill, and
-renaming a term changes every card at once.
+For a search query, ORDER BY `_neotiq_dept_code` then `_neotiq_city` with three plain
+meta joins, instead of aggregating over every term on every post. Sorting on the city
+sorts by name, because the code is already stripped.
+
+The terms themselves are never touched. Term names keep the codes they carry
+("26000 Valence", "75 Paris"); the code is dropped on the way into these fields.
 
 Paris, Lyon and Marseille carry an arrondissement in the localisation taxonomy
 instead of a ville term, and the line follows: department, then city, then
 arrondissement. Paris is its own department, so it is printed once, not twice.
+
+= Keeping the listing fields current =
+
+They are rebuilt whenever a post's location terms change, whatever writes them — the
+admin, a JetFormBuilder form, this plugin's own sync, an import or WP-CLI — and
+whenever one of those terms is renamed. Several taxonomies are written one after
+another during a save, so the rebuild is deferred to the end of the request and each
+post is built once.
+
+Existing posts need one pass after installing: Tools -> Neotiq Geo Sync -> Listing
+data -> Start. It reads no geocoder, so it runs at full speed.
 
 
 = When it runs =
@@ -155,6 +170,15 @@ Address by address, bounded by the geocoders: both are queried at most once per 
 Because the useful question is "what is the state of this post now", not "what did run 14 say". One row per post, overwritten, answers that in a single query and doubles as the bookkeeping the incremental mode needs. Run history would grow without bound and still not tell you whether a post is currently correct.
 
 == Changelog ==
+
+= 1.2.0 =
+* Listing fields: _neotiq_location, _neotiq_city, _neotiq_department and
+  _neotiq_dept_code, written from the post's own terms and kept up to date on every
+  route that changes them, plus a [neotiq_location] shortcode.
+* The map coordinates tab became "Listing data" and now rebuilds both sets of fields
+  in one pass.
+* tools/repair-truncated-names.php, a one-off repair for term names cut short by an
+  old import.
 
 = 1.1.0 =
 * Store findings in their own table, so reviewing no longer means re-checking.
