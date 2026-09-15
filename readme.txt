@@ -67,6 +67,28 @@ Each post is re-synced at the moment it is applied rather than replayed from the
 
 Statuses are: already correct, to correct, corrected, no address, conflict (the post's country and its address disagree — nothing is written) and error (the geocoder could not be reached).
 
+= Repairing truncated names =
+
+`tools/repair-truncated-names.php` is a one-off maintenance script, not part of the
+plugin's normal work. An old import stored term names with `substr( $name, 0,
+mb_strlen( $name ) )`, so every name lost one trailing character per accented
+character it held: "Bage-le-Cha" for "Bâgé-le-Châtel". The slug was written before
+the cut, so the missing tail is read back from there.
+
+It only rewrites a name when putting the tail back reproduces the bytes still in the
+database, so an edited title or an accent inside the lost tail is left alone rather
+than guessed at. Slugs are never touched, Yoast's cached breadcrumb titles are kept
+in step, and every change is written to a CSV in wp-content for rollback.
+
+Dry run by default:
+
+    php tools/repair-truncated-names.php            # report only
+    php tools/repair-truncated-names.php --apply    # write
+
+Administrators can also open the file in a browser; applying from there needs the
+nonce link the dry run prints. Re-runnable: repaired rows stop matching.
+
+
 = Storage =
 
 Findings live in one table, `{prefix}neo_geo_results`, holding one row per post rather than a snapshot per run: the post ID, its status, the taxonomy changes and notes as JSON, the label the geocoder returned, the post's modified date at check time, when it was checked, and when corrections were last applied to it.
