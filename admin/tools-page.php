@@ -186,7 +186,7 @@ function neotiq_geo_render_coordinates_panel() {
 	<div id="neotiq-geo-coord-panel" class="card" style="max-width:900px;padding:4px 16px;">
 		<h2><?php esc_html_e( 'Rebuild listing data', 'neotiq-geo-sync' ); ?></h2>
 		<p>
-			<?php esc_html_e( 'Writes the two sets of fields a listing needs: map_lat, map_lng and map_coordinate for JetEngine map listings and the distance search, and _neotiq_location, _neotiq_city, _neotiq_department and _neotiq_dept_code for listing cards and search ordering. Both are derived from data the posts already carry, so this needs no geocoding and runs at full speed, independently of the address check. New and edited posts are kept up to date automatically; run this once after installing to fill in the posts that already exist.', 'neotiq-geo-sync' ); ?>
+			<?php esc_html_e( 'Writes the two sets of fields a listing needs: map_lat, map_lng and map_coordinate for JetEngine map listings and the distance search, and _neotiq_location, _neotiq_city, _neotiq_department, _neotiq_dept_code, _neotiq_arrondissement and _neotiq_arrondissement_code for listing cards and search ordering. Both are derived from data the posts already carry, so this needs no geocoding and runs at full speed, independently of the address check. New and edited posts are kept up to date automatically; run this once after installing to fill in the posts that already exist.', 'neotiq-geo-sync' ); ?>
 		</p>
 		<p><strong id="neotiq-geo-coord-coverage"></strong></p>
 		<table class="form-table">

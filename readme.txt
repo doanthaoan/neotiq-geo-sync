@@ -5,7 +5,7 @@ Plugin URI: https://neotiq.com/
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,13 +45,23 @@ The field name must be the same on both post types, since JetEngine is configure
 
 = The location line on listing cards =
 
-Four post meta fields, written for every venue and provider and kept up to date
+Six post meta fields, written for every venue and provider and kept up to date
 automatically:
 
-    _neotiq_location    Drôme, Valence   Rhône, Lyon, 2e   Paris, 13e   Marrakech
-    _neotiq_city        Valence          Lyon              Paris        Marrakech
-    _neotiq_department  Drôme            Rhône             (empty)      (empty)
-    _neotiq_dept_code   26               69                75           (empty)
+    _neotiq_location             26 - Drôme - Valence
+                                 69 - Rhône - Lyon - 2e
+                                 75 - Paris - 13e
+                                 Marrakech
+    _neotiq_city                 Valence   Lyon    Paris    Marrakech
+    _neotiq_department           Drôme     Rhône   (empty)  (empty)
+    _neotiq_dept_code            26        69      75       (empty)
+    _neotiq_arrondissement       (empty)   2e      13e      (empty)
+    _neotiq_arrondissement_code  (empty)   69002   75013    (empty)
+
+The department code is the two characters that identify the department. Term codes
+are not all two characters -- the Métropole de Lyon is "69M", Monaco is "980", and an
+imported term can carry a whole postcode -- so they are cut down on the way in. That
+is also what keeps "980" from sorting after "95".
 
 For a listing card, point a JetEngine Dynamic Field at `_neotiq_location` and turn on
 "Hide if value is empty". A post with no location stores an empty string, so the
@@ -64,16 +74,19 @@ or a template:
     [neotiq_location field="department"]
     [neotiq_location field="arrondissement"]
 
-For a search query, ORDER BY `_neotiq_dept_code` then `_neotiq_city` with three plain
-meta joins, instead of aggregating over every term on every post. Sorting on the city
-sorts by name, because the code is already stripped.
+For a search query, ORDER BY `_neotiq_dept_code`, `_neotiq_city` then
+`_neotiq_arrondissement_code` with plain meta joins, instead of aggregating over every
+term on every post. Sorting on the city sorts by name, because the code is already
+stripped. Order the two codes as strings rather than casting them to numbers: they are
+fixed width, so a string sort is already the numeric one, and it is the only one that
+puts Corsica ("2A", "2B") after 19 rather than after 01.
 
 The terms themselves are never touched. Term names keep the codes they carry
 ("26000 Valence", "75 Paris"); the code is dropped on the way into these fields.
 
 Paris, Lyon and Marseille carry an arrondissement in the localisation taxonomy
-instead of a ville term, and the line follows: department, then city, then
-arrondissement. Paris is its own department, so it is printed once, not twice.
+instead of a ville term, and the line follows: code, department, city, arrondissement.
+Paris is its own department, so it is printed once, not twice.
 
 = Keeping the listing fields current =
 
@@ -170,6 +183,18 @@ Address by address, bounded by the geocoders: both are queried at most once per 
 Because the useful question is "what is the state of this post now", not "what did run 14 say". One row per post, overwritten, answers that in a single query and doubles as the bookkeeping the incremental mode needs. Run history would grow without bound and still not tell you whether a post is currently correct.
 
 == Changelog ==
+
+= 1.3.0 =
+* The location line leads with the department code and separates on " - ":
+  "44 - Loire-Atlantique - Nantes".
+* Two more listing fields, _neotiq_arrondissement and _neotiq_arrondissement_code, so
+  a search can sort within a city without joining the terms back in.
+* _neotiq_dept_code is cut to the two characters that identify the department.
+* Uninstall removes every _neotiq_ post meta by prefix rather than by a list that
+  could fall behind.
+
+Existing sites: run Tools > Listing data once after updating. The fields are only
+rewritten when a post is touched, so posts nobody edits would keep the old format.
 
 = 1.2.0 =
 * Listing fields: _neotiq_location, _neotiq_city, _neotiq_department and

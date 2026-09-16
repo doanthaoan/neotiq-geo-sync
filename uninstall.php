@@ -15,21 +15,17 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-/**
- * Listed here rather than read from the plugin, which is not loaded on uninstall.
- *
- * @return string[]
- */
-function neotiq_geo_uninstall_listing_keys() {
-	return array( '_neotiq_location', '_neotiq_city', '_neotiq_department', '_neotiq_dept_code' );
-}
-
-delete_post_meta_by_key( '_neotiq_geo_cache' );
-
-// The listing fields, all derived from the site's own terms.
-foreach ( neotiq_geo_uninstall_listing_keys() as $neotiq_key ) {
-	delete_post_meta_by_key( $neotiq_key );
-}
+// Everything this plugin writes to a post is prefixed, so one query covers the
+// listing fields and the geocoding cache. Matching the prefix rather than listing the
+// keys is what stops this drifting behind includes/display.php, which is not loaded
+// on uninstall and so cannot be asked.
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+$wpdb->query(
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
+		$wpdb->esc_like( '_neotiq_' ) . '%'
+	)
+);
 
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 $wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->prefix . 'neo_geo_results`' );

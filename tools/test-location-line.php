@@ -39,9 +39,16 @@ $plain = (int) $wpdb->get_var(
 	 WHERE p.post_type IN ('etablissement','prestataire') LIMIT 1"
 );
 $parts = neotiq_geo_location_parts( $plain );
-check( 'France, city term', neotiq_geo_location_line( $plain ), $parts['department'] . ', ' . $parts['city'] );
+check( 'France, city term', neotiq_geo_location_line( $plain ), $parts['department_code'] . ' - ' . $parts['department'] . ' - ' . $parts['city'] );
 check( '  city carries no postcode', (bool) preg_match( '/^\d/', $parts['city'] ), false );
-check( '  department code kept for sorting', (bool) preg_match( '/^\d+$/', $parts['department_code'] ), true );
+check( '  department code is two characters', strlen( $parts['department_code'] ), 2 );
+
+// The codes the terms carry are not all two characters, and the search casts this to
+// a number to sort on: "980" would land after "95" rather than beside "98".
+check( 'code trimmed: 44000', neotiq_geo_dept_code( '44000' ), '44' );
+check( 'code trimmed: 69M', neotiq_geo_dept_code( '69M' ), '69' );
+check( 'code left alone: 2A', neotiq_geo_dept_code( '2A' ), '2A' );
+check( 'no code, no guess', neotiq_geo_dept_code( '' ), '' );
 
 // Paris: the department term is "75 Paris" and the city term is "Paris", so the
 // department has to drop out rather than print twice.
@@ -52,7 +59,10 @@ $paris = (int) $wpdb->get_var(
 	 WHERE tt.taxonomy = 'localisation' AND tt.parent = 163 AND p.post_type IN ('etablissement','prestataire') LIMIT 1"
 );
 $parts = neotiq_geo_location_parts( $paris );
-check( 'Paris, arrondissement', neotiq_geo_location_line( $paris ), 'Paris, ' . $parts['arrondissement'] );
+check( 'Paris, arrondissement', neotiq_geo_location_line( $paris ), $parts['department_code'] . ' - ' . $parts['city'] . ' - ' . $parts['arrondissement'] );
+check( '  the department is not printed twice', $parts['department'], $parts['city'] );
+check( '  arrondissement code is the postcode', (bool) preg_match( '/^\d{5}$/', $parts['arrondissement_code'] ), true );
+check( '  and it is stored for the search to sort on', get_post_meta( $paris, '_neotiq_arrondissement_code', true ), $parts['arrondissement_code'] );
 
 $abroad = (int) $wpdb->get_var(
 	"SELECT p.ID FROM {$wpdb->posts} p

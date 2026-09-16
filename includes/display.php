@@ -28,7 +28,14 @@ const NEOTIQ_GEO_LOCATION_TAXONOMIES = array( 'localisation', 'ville', 'euville'
  * @return string[]
  */
 function neotiq_geo_listing_keys() {
-	return array( '_neotiq_location', '_neotiq_city', '_neotiq_department', '_neotiq_dept_code' );
+	return array(
+		'_neotiq_location',
+		'_neotiq_city',
+		'_neotiq_department',
+		'_neotiq_dept_code',
+		'_neotiq_arrondissement',
+		'_neotiq_arrondissement_code',
+	);
 }
 
 /**
@@ -43,18 +50,35 @@ function neotiq_geo_plain_name( $name ) {
 }
 
 /**
+ * The two characters that identify a department: "44000" and "44" both give "44".
+ *
+ * Term codes are not uniformly two characters. Most are ("75", "2A"), but the
+ * Metropole de Lyon is "69M" and Monaco is "980", and an imported term can carry a
+ * whole postcode. Two is what belongs in front of the name, and it is also what keeps
+ * "980" from sorting after "95" once the search casts the code to a number.
+ *
+ * @param string $code Term code.
+ *
+ * @return string
+ */
+function neotiq_geo_dept_code( $code ) {
+	return substr( trim( (string) $code ), 0, 2 );
+}
+
+/**
  * The parts of a post's location, cleaned up for display.
  *
  * @param int $post_id Post ID.
  *
- * @return array{department:string,department_code:string,city:string,arrondissement:string}
+ * @return array{department:string,department_code:string,city:string,arrondissement:string,arrondissement_code:string}
  */
 function neotiq_geo_location_parts( $post_id ) {
 	$parts = array(
-		'department'      => '',
-		'department_code' => '',
-		'city'            => '',
-		'arrondissement'  => '',
+		'department'          => '',
+		'department_code'     => '',
+		'city'                => '',
+		'arrondissement'      => '',
+		'arrondissement_code' => '',
 	);
 
 	// get_the_terms(), not wp_get_object_terms(): only the former reads the object
@@ -69,7 +93,7 @@ function neotiq_geo_location_parts( $post_id ) {
 			switch ( count( get_ancestors( $term->term_id, 'localisation', 'taxonomy' ) ) ) {
 				case 1:
 					$parts['department']      = neotiq_geo_plain_name( $term->name );
-					$parts['department_code'] = (string) get_term_meta( $term->term_id, 'localisation_code', true );
+					$parts['department_code'] = neotiq_geo_dept_code( get_term_meta( $term->term_id, 'localisation_code', true ) );
 					break;
 
 				case 2:
@@ -77,7 +101,10 @@ function neotiq_geo_location_parts( $post_id ) {
 					break;
 
 				case 3:
-					$parts['arrondissement'] = neotiq_geo_arrondissement_label( $term->name );
+					// The code is the postcode (75001, 13003). Within a city it sorts the
+					// same way the number does, and it is what the terms already carry.
+					$parts['arrondissement']      = neotiq_geo_arrondissement_label( $term->name );
+					$parts['arrondissement_code'] = (string) get_term_meta( $term->term_id, 'localisation_code', true );
 					break;
 			}
 		}
@@ -119,7 +146,15 @@ function neotiq_geo_arrondissement_label( $number ) {
 }
 
 /**
- * The finished line: "Drôme, Valence", "Rhône, Lyon, 2e", "Paris, 13e", "Marrakech".
+ * The finished line, code first:
+ *
+ *     44 - Loire-Atlantique - Nantes
+ *     69 - Rhône - Lyon - 2e
+ *     75 - Paris - 13e
+ *     Marrakech
+ *
+ * Built in a fixed order rather than from $parts, because the code has to lead and
+ * the parts array is keyed for lookup, not for reading out.
  *
  * @param int $post_id Post ID.
  *
@@ -128,14 +163,22 @@ function neotiq_geo_arrondissement_label( $number ) {
 function neotiq_geo_location_line( $post_id ) {
 	$parts = neotiq_geo_location_parts( $post_id );
 
-	unset( $parts['department_code'] );
-
-	// Paris is its own department, so the two would read "Paris, Paris, 13e".
+	// Paris is its own department, so the two would read "75 - Paris - Paris - 13e".
 	if ( $parts['department'] === $parts['city'] ) {
 		$parts['department'] = '';
 	}
 
-	return implode( ', ', array_filter( $parts ) );
+	return implode(
+		' - ',
+		array_filter(
+			array(
+				$parts['department_code'],
+				$parts['department'],
+				$parts['city'],
+				$parts['arrondissement'],
+			)
+		)
+	);
 }
 
 /**
@@ -154,11 +197,15 @@ function neotiq_geo_store_listing_meta( $post_id ) {
 	$post_id = (int) $post_id;
 	$parts   = neotiq_geo_location_parts( $post_id );
 
+	// The arrondissement gets its own two rows as well as its place in the line, so a
+	// search can sort on the code without joining the terms back in.
 	$values = array(
-		'_neotiq_location'   => neotiq_geo_location_line( $post_id ),
-		'_neotiq_city'       => $parts['city'],
-		'_neotiq_department' => $parts['department'],
-		'_neotiq_dept_code'  => $parts['department_code'],
+		'_neotiq_location'            => neotiq_geo_location_line( $post_id ),
+		'_neotiq_city'                => $parts['city'],
+		'_neotiq_department'          => $parts['department'],
+		'_neotiq_dept_code'           => $parts['department_code'],
+		'_neotiq_arrondissement'      => $parts['arrondissement'],
+		'_neotiq_arrondissement_code' => $parts['arrondissement_code'],
 	);
 
 	$written = false;
